@@ -10,29 +10,28 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.SubscribableChannel;
 
 /**
- * rbiListener
+ * coffeeListener
  * Spring Cloud Stream 을 활용하여, RabbitMQ 메시지 큐 소비자 구현
  *
  * @author Eddy.Kim
  */
 
-@EnableBinding(rbiListener.Sink.class)
-public class rbiListener {
+@EnableBinding(BrunchListener.Sink.class)
+public class BrunchListener {
 
     @Autowired
     private JobLauncher jobLauncher;
 
     @Autowired
-    private Job processJob;
+    private Job brunchProcessJob;
 
     @StreamListener(Sink.inboundTest)
-    public void subscribe(Order order) {
+    public void subscribe() {
 
         try{
-            jobLauncher.run(processJob, new JobParametersBuilder()
+            jobLauncher.run(brunchProcessJob, new JobParametersBuilder()
                     .addLong("timestamp",
                             System.currentTimeMillis())
-                    .addString("coffeePath", order.getCoffeePath())
                     .toJobParameters());
         }
         catch(Exception e){
@@ -40,9 +39,9 @@ public class rbiListener {
     }
 
     public interface Sink {
-        String inboundTest = "SINK-TEST";
+        String inboundTest = "SINK-BRUNCH";
 
         @Input(inboundTest)
-        SubscribableChannel rbiListener();
+        SubscribableChannel BrunchListener();
     }
 }

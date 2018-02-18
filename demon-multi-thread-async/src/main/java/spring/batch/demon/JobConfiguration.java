@@ -36,10 +36,18 @@ public class JobConfiguration {
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
 
-    @Bean
-    public Job processJob() throws Exception {
-        return this.jobBuilderFactory.get("processJob")
+    @Bean(name="coffeeProcessJob")
+    public Job coffeeProcessJob() throws Exception {
+        return this.jobBuilderFactory.get("coffeeProcessJob")
                 .flow(step1())
+                .end()
+                .build();
+    }
+
+    @Bean(name="brunchProcessJob")
+    public Job brunchProcessJob() throws Exception {
+        return this.jobBuilderFactory.get("brunchProcessJob")
+                .flow(step2())
                 .end()
                 .build();
     }
@@ -54,6 +62,33 @@ public class JobConfiguration {
                 .reader(reader(OVERRIDDEN_BY_EXPRESSION))
                 .processor(processor)
                 .writer(writer)
+                .build();
+    }
+
+    @Bean
+    protected Step step2() throws Exception {
+        return stepBuilderFactory.get("step2")
+                .<String, String>chunk(1)
+                .reader(new ItemReader<String>() {
+                    @Override
+                    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+                        System.out.println("step2 read");
+                        Thread.sleep(10000000);
+                        return null;
+                    }
+                })
+                .processor(new ItemProcessor<String, String>() {
+                    @Override
+                    public String process(String item) throws Exception {
+                        return null;
+                    }
+                })
+                .writer(new ItemWriter<String>() {
+                    @Override
+                    public void write(List<? extends String> items) throws Exception {
+
+                    }
+                })
                 .build();
     }
 
